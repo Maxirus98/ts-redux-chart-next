@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import { connect } from "react-redux";
+import { AccountActionTypes } from "./actions/AccountAction";
+import store from "./models/store";
+import { useTranslation } from 'react-i18next';
+import { useEffect } from "react";
+import { Languages } from "./actions/TranslateAction";
 function App() {
+  const { t, i18n } = useTranslation();
+  const state = store.getState();
+
+  useEffect(() => {
+    i18n.changeLanguage(state.language);
+
+  }, [state.language]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>{t("Amount")} : {state.account}</h1>
+      <button onClick={() => store.dispatch({ type: AccountActionTypes.INCREMENT, payload: 10 })}>+</button>
+      <button onClick={() => store.dispatch({ type: AccountActionTypes.DECREMENT, payload: 10 })}>-</button>
+      <button onClick={() => {
+        let language = state.language === Languages.FR ? Languages.EN : Languages.FR;
+        store.dispatch({ type: language })
+      }}>{t("ToggleLanguage")}</button>
     </div>
   );
 }
 
-export default App;
+
+const mapStateToProps = (state: number) => {
+  return state;
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
